@@ -1,6 +1,6 @@
 #! /bin/bash
 SERVER=$1
-if [[  ${CLANG_REVISION} == "" ]]
+if [[ "${CLANG_REVISION}" == "" ]]
 then
     wget -O update.py https://raw.githubusercontent.com/chromium/chromium/master/tools/clang/scripts/update.py
     CLANG_REVISION=$(cat update.py | grep CLANG_REVISION | head -n 1 | cut -d "'" -f 2)

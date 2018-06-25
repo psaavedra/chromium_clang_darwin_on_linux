@@ -7,7 +7,7 @@ then
 fi
 wget -S --spider -O /dev/null ${SERVER}/clang_darwin_on_linux_${CLANG_REVISION}.tar.gz
 RES=$?
-if [ ${RES} == "0"]
+if [[ "${RES}" == "0" ]]
 then
     exit 1
 fi
