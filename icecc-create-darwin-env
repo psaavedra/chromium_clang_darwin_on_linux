@@ -47,7 +47,7 @@ ninja install
 
 # Creating ice environment
 cd ..
-BUILD_ENV=$(pwd)/$(/usr/lib/icecc/icecc-create-env --clang ${pwd}/install_dir_clang_darwin_on_linux/bin/clang  /usr/lib/icecc/compilerwrapper | grep creating | awk '{print $2}')
+BUILD_ENV=$(pwd)/$(/usr/lib/icecc/icecc-create-env --clang $(pwd)/install_dir_clang_darwin_on_linux/bin/clang  /usr/lib/icecc/compilerwrapper | grep creating | awk '{print $2}')
 
 mv $BUILD_ENV clang_darwin_on_linux_${CLANG_REVISION}.tar.gz
 
