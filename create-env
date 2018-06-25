@@ -1,0 +1,54 @@
+#! /bin/bash
+
+if [[ ! ${THREADS} == "" ]]
+then
+    J="-j ${THREADS}"
+fi
+
+if [[  ${CLANG_REVISION} == "" ]]
+then
+    wget -O update.py https://raw.githubusercontent.com/chromium/chromium/master/tools/clang/scripts/update.py
+    CLANG_REVISION=$(cat update.py | grep CLANG_REVISION | head -n 1 | cut -d "'" -f 2)
+fi
+
+# Checking out LLVM
+svn checkout --force https://llvm.org/svn/llvm-project/llvm/trunk@${CLANG_REVISION} llvm
+
+# Checking out Clang
+svn checkout --force https://llvm.org/svn/llvm-project/cfe/trunk@${CLANG_REVISION} llvm/tools/clang
+
+# Checking out LLD
+svn checkout --force https://llvm.org/svn/llvm-project/lld/trunk@${CLANG_REVISION} llvm/tools/lld
+
+# Checking out compiler-rt
+svn checkout --force https://llvm.org/svn/llvm-project/compiler-rt/trunk@${CLANG_REVISION} llvm/compiler-rt
+
+# Building
+mkdir build
+cd build
+cmake -GNinja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DLLVM_ENABLE_ASSERTIONS=ON \
+  -DLLVM_ENABLE_TERMINFO=OFF \
+  -DLLVM_USE_CRT_RELEASE=MT \
+  -DLLVM_ENABLE_LIBXML2=FORCE_ON \
+  -DCMAKE_C_FLAGS= \
+  -DCMAKE_CXX_FLAGS= \
+  -DCMAKE_EXE_LINKER_FLAGS= \
+  -DCMAKE_SHARED_LINKER_FLAGS= \
+  -DCMAKE_MODULE_LINKER_FLAGS= \
+  -DLLVM_DEFAULT_TARGET_TRIPLE=x86_64-apple-darwin16.0.0 \
+  -DCMAKE_INSTALL_PREFIX:PATH=../install_dir_clang_darwin_on_linux/ \
+  ../llvm
+ninja -j${J}
+
+# Installing
+ninja install
+
+# Creating ice environment
+cd ..
+BUILD_ENV=$(pwd)/$(/usr/lib/icecc/icecc-create-env --clang ${pwd}/install_dir_clang_darwin_on_linux/bin/clang  /usr/lib/icecc/compilerwrapper | grep creating | awk '{print $2}')
+
+mv $BUILD_ENV clang_darwin_on_linux_${CLANG_REVISION}.tar.gz
+
+rm -rf build install_dir_clang_darwin_on_linux update.py
