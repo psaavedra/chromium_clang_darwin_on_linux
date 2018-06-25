@@ -1,0 +1,4 @@
+#! /bin/bash
+SERVER=$1
+CLANG_REVISION=$2
+wget -S --spider -O /dev/null ${SERVER}/clang_darwin_on_linux_${CLANG_REVISION}.tar.gz
