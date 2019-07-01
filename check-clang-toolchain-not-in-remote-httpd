@@ -3,7 +3,7 @@ SERVER=$1
 if [[  ${CLANG_REVISION} == "" ]]
 then
     wget -O update.py https://raw.githubusercontent.com/chromium/chromium/master/tools/clang/scripts/update.py
-    CLANG_REVISION=$(cat update.py | grep CLANG_REVISION | head -n 1 | cut -d "'" -f 2)
+    CLANG_REVISION=$(cat update.py | grep CLANG_SVN_REVISION | head -n 1 | cut -d "'" -f 2)
 fi
 wget -S --spider -O /dev/null ${SERVER}/clang_darwin_on_linux_${CLANG_REVISION}.tar.gz
 RES=$?
